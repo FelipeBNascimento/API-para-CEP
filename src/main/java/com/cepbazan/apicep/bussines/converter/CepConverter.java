@@ -1,15 +1,16 @@
 package com.cepbazan.apicep.bussines.converter;
 
-import com.cepbazan.apicep.bussines.CepDTO;
+import com.cepbazan.apicep.bussines.CepRequestDTO;
+import com.cepbazan.apicep.bussines.CepResponseDto;
 import com.cepbazan.apicep.infraesctruture.entity.CepEntity;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CepConverter {
 
-    public CepEntity paraCepEntity(CepDTO cepDTO){
+    public CepEntity paraCepEntity(CepRequestDTO cepDTO) {
 
-        CepEntity cep = CepEntity.builder()
+        return CepEntity.builder()
 
                 .rua(cepDTO.getRua())
                 .cep(cepDTO.getCep())
@@ -18,12 +19,11 @@ public class CepConverter {
                 .uf(cepDTO.getUf())
                 .build();
 
-        return cep;
     }
 
-    public CepDTO paraCepDTO(CepEntity cep){
+    public CepRequestDTO paraCepRequestDTO(CepEntity cep) {
 
-        CepDTO cepDTO = CepDTO.builder()
+        return CepRequestDTO.builder()
 
                 .rua(cep.getRua())
                 .cep(cep.getCep())
@@ -32,6 +32,34 @@ public class CepConverter {
                 .uf(cep.getUf())
                 .build();
 
-        return cepDTO;
+
+    }
+
+    public CepResponseDto paraCepREsponseDto(CepEntity cepEntity) {
+
+        return CepResponseDto.builder()
+
+                .id(cepEntity.getId())
+                .rua(cepEntity.getRua())
+                .cep(cepEntity.getCep())
+                .bairro(cepEntity.getBairro())
+                .estado(cepEntity.getEstado())
+                .uf(cepEntity.getUf())
+                .build();
+
+
+    }
+
+    public CepEntity AtualizarCep(CepEntity cepEntity, CepRequestDTO cepRequestDTO) {
+
+        return CepEntity.builder()
+
+                .id(cepEntity.getId())
+                .rua(cepRequestDTO.getRua() != null ? cepRequestDTO.getRua() : cepEntity.getRua())
+                .cep(cepRequestDTO.getCep() != null ? cepRequestDTO.getCep() : cepEntity.getCep())
+                .bairro(cepRequestDTO.getBairro() != null ? cepRequestDTO.getBairro() : cepEntity.getBairro())
+                .estado(cepRequestDTO.getEstado() != null ? cepRequestDTO.getEstado() : cepEntity.getEstado())
+                .uf(cepRequestDTO.getUf() != null ? cepRequestDTO.getUf() : cepEntity.getUf())
+                .build();
     }
 }

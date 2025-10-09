@@ -6,6 +6,7 @@ import com.cepbazan.apicep.bussines.apiexterna.ConverterDados;
 import com.cepbazan.apicep.bussines.apiexterna.DadosCep;
 import com.cepbazan.apicep.bussines.converter.CepConverter;
 import com.cepbazan.apicep.infraesctruture.entity.CepEntity;
+import com.cepbazan.apicep.infraesctruture.exception.IdNaoEncontrado;
 import com.cepbazan.apicep.infraesctruture.repository.CepRepositorio;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,14 +27,14 @@ public class CepService {
     }
 
 
-    public CepDTO criarEndereco(String cep) {
+    public CepResponseDto criarEndereco(String cep) {
 
         String url_base = "https://viacep.com.br/ws/" + cep + "/json/";
 
         String consumido = consumir.obterDados(url_base);
         DadosCep dadosCep = converte.ObterDados(consumido, DadosCep.class);
 
-        CepDTO novoCep = CepDTO.builder()
+        CepRequestDTO novoCep = CepRequestDTO.builder()
 
                 .rua(dadosCep.getRua())
                 .cep(dadosCep.getCep())
@@ -44,44 +45,34 @@ public class CepService {
 
         CepEntity cepEntity = cepConverter.paraCepEntity(novoCep);
         CepEntity cepSalvo = repositorio.save(cepEntity);
-        return cepConverter.paraCepDTO(cepEntity);
+        return cepConverter.paraCepREsponseDto(cepSalvo);
     }
 
-    public CepDTO mostrarPeloId(Long id) {
+    public CepResponseDto mostrarPeloId(Long id) {
 
 
         CepEntity cep =  repositorio.findById(id).orElseThrow(
-                () -> new RuntimeException("Id não encontrado")
+                () -> new IdNaoEncontrado("Id não encontrado")
         );
 
-       CepDTO cepDto = cepConverter.paraCepDTO(cep);
+       CepResponseDto cepDto = cepConverter.paraCepREsponseDto(cep);
 
        return cepDto;
     }
 
 
 
-    public CepDTO atualizarCep(CepDTO cep, Long id) {
+    public CepResponseDto atualizarCep(CepRequestDTO cep, Long id) {
 
         CepEntity cepNoBanco = repositorio.findById(id).orElseThrow(
                 () -> new RuntimeException("Id não encontrado")
         );
 
-        CepEntity cepAtualizado = CepEntity.builder()
-
-                .rua(cep.getRua() != null ? cep.getRua() : cepNoBanco.getRua())
-                .cep(cep.getCep() != null ? cep.getCep() : cepNoBanco.getCep())
-                .bairro((cep.getBairro() != null ? cep.getBairro() : cepNoBanco.getBairro()))
-                .estado(cep.getEstado() != null ? cep.getEstado() : cepNoBanco.getEstado())
-                .uf(cep.getUf() != null ? cep.getUf() : cepNoBanco.getUf())
-                .id(cepNoBanco.getId())
-                .build();
+        CepEntity cepAtualizado =  cepConverter.AtualizarCep(cepNoBanco, cep);
 
         CepEntity cepSalvo =  repositorio.saveAndFlush(cepAtualizado);
 
-        CepDTO cepDto = cepConverter.paraCepDTO(cepSalvo);
-
-        return cepDto;
+        return cepConverter.paraCepREsponseDto(cepSalvo);
 
     }
 

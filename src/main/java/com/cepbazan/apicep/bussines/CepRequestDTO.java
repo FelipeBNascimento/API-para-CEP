@@ -1,6 +1,6 @@
 package com.cepbazan.apicep.bussines;
 
-import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @AllArgsConstructor
@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class CepDTO {
+public class CepRequestDTO {
 
 
     private String rua;

@@ -1,14 +1,13 @@
 package com.cepbazan.apicep.controller;
 
 
-import com.cepbazan.apicep.bussines.CepDTO;
+import com.cepbazan.apicep.bussines.CepRequestDTO;
+import com.cepbazan.apicep.bussines.CepResponseDto;
 import com.cepbazan.apicep.bussines.CepService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -25,25 +24,26 @@ public class CepController {
     }
 
     @GetMapping
-    public ResponseEntity<CepDTO> mostrarpeloID(@RequestParam Long id) {
+    public ResponseEntity<CepResponseDto> mostrarpeloID(@RequestParam Long id) {
 
 
         return ResponseEntity.ok(service.mostrarPeloId(id));
     }
 
-    @PostMapping("/{cep}")
+    @PostMapping()
 
-    public ResponseEntity<CepDTO> criarCep(@PathVariable String cep) {
+    public ResponseEntity<CepResponseDto> criarCep(@RequestParam String cep) {
 
-        CepDTO cepDto = service.criarEndereco(cep);
+        CepResponseDto cepResponseDto = service.criarEndereco(cep);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(cepDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(cepResponseDto);
     }
 
     @PutMapping
-    public ResponseEntity<CepDTO> atualizarCep(@RequestBody CepDTO cep, @RequestParam Long id){
+    public ResponseEntity<CepResponseDto> atualizarCep(@RequestBody CepRequestDTO cep,
+                                                       @RequestParam Long id){
 
-        CepDTO cepDTO = service.atualizarCep(cep, id);
+        CepResponseDto cepDTO = service.atualizarCep(cep, id);
 
         return ResponseEntity.ok(cepDTO);
     }
